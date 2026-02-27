@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulls Game Night Series | Catalyst x Plus500</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #CE1141;
+    --black: #111111;
+    --white: #FFFFFF;
+    --bg: #F4F4F2;
+    --surface: #FFFFFF;
+    --surface2: #F8F8F6;
+    --border: rgba(0,0,0,0.09);
+    --border-soft: rgba(0,0,0,0.05);
+    --muted: #888888;
+    --muted2: #BBBBBB;
+    --navy: #1B2A8C;
+    --gold: #C8920A;
+    --gold-light: #EDAA0F;
+    --green: #15803D;
+    --green-bright: #16A34A;
+    --loss: #CC2222;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* TICKER */
+  .ticker {
+    background: var(--black);
+    padding: 8px 0;
+    overflow: hidden;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 56px;
+    animation: ticker 28s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-item { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; flex-shrink: 0; color: #FFFFFF; }
+  .ticker-sep { opacity: 0.3; color: #FFFFFF; flex-shrink: 0; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 15;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 62px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 var(--border);
+    white-space: nowrap;
+  }
+  .nav-left { display: flex; align-items: center; gap: 20px; }
+  .catalyst-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 4px; color: var(--black);
+  }
+  .nav-sep { width: 1px; height: 24px; background: var(--border); }
+  .partner-block { display: flex; flex-direction: column; gap: 2px; }
+  .partner-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+  .live-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: #F0FDF4; border: 1px solid #BBF7D0;
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--green-bright);
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green-bright);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  .btn-nav {
+    background: var(--red); color: #fff; border: none;
+    padding: 9px 22px; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .btn-nav:hover { opacity: 0.84; }
+
+  /* HERO */
+  .hero {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 48px 0;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--red);
+  }
+  .hero-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    margin-bottom: 40px;
+  }
+  .hero-text { flex: 1; min-width: 0; }
+  .series-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #FEF2F4; border: 1px solid rgba(206,17,65,0.2);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--red); margin-bottom: 18px;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 84px);
+    line-height: 0.93; letter-spacing: 2px;
+    color: var(--black); margin-bottom: 16px;
+  }
+  .hero-title .red { color: var(--red); }
+  .hero-sub {
+    font-size: 15px; color: var(--muted); font-weight: 400;
+    line-height: 1.65; max-width: 420px;
+  }
+
+  /* CTA inline in hero */
+  .hero-cta {
+    width: 320px;
+    flex-shrink: 0;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    margin-top: 4px;
+  }
+  .hero-cta-top {
+    background: var(--black);
+    border-left: 4px solid var(--red);
+    padding: 20px 20px 20px 18px;
+  }
+  .hero-cta-overline { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+  .hero-cta-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1.5px; line-height: 1.0; color: #FFFFFF; margin-bottom: 6px; }
+  .hero-cta-sub { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.55; }
+  .hero-cta-body { padding: 16px 18px; }
+  .btn-hero-enter {
+    display: block; width: 100%;
+    background: var(--red); color: #fff; border: none;
+    padding: 13px; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: opacity 0.15s; margin-bottom: 14px;
+  }
+  .btn-hero-enter:hover { opacity: 0.84; }
+  .hero-brought-by {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding-top: 12px; border-top: 1px solid var(--border);
+  }
+  .hero-brought-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  /* Hero stats strip */
+  .hero-stats {
+    display: flex;
+    border-top: 1px solid var(--border);
+    margin: 0 -48px;
+  }
+  .hero-stat {
+    flex: 1;
+    padding: 18px 28px;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 1px; color: var(--black); line-height: 1;
+  }
+  .hero-stat-value.accent { color: var(--red); }
+  .hero-stat-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* MAIN GRID */
+  .main {
+    padding: 28px 48px 80px;
+    display: grid; grid-template-columns: 1fr 356px;
+    gap: 22px; max-width: 1400px; margin: 0 auto;
+  }
+
+  /* GAME CARD */
+  .game-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  .game-card-header {
+    background: var(--black);
+    padding: 16px 26px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .matchup { display: flex; align-items: center; gap: 14px; }
+  .team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 2px; color: #FFFFFF;
+  }
+  .vs-tag {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 4px; letter-spacing: 1px;
+  }
+  .game-meta { text-align: right; font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+  .game-meta strong { display: block; font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 600; margin-bottom: 1px; }
+  .game-body { padding: 22px 26px; }
+
+  /* Score */
+  .score-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 30px; margin-bottom: 20px;
+  }
+  .score-team { text-align: center; }
+  .score-team-name { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .score-number { font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; letter-spacing: 2px; color: var(--black); }
+  .score-number.bulls { color: var(--red); }
+  .score-center { text-align: center; }
+  .q-badge {
+    display: inline-block;
+    background: #FEF2F4; border: 1px solid rgba(206,17,65,0.2);
+    color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 9px; border-radius: 4px; margin-bottom: 6px;
+  }
+  .game-clock { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--black); }
+
+  /* Comp info */
+  .comp-info-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 11px; margin-bottom: 20px;
+  }
+  .comp-info-item {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .comp-info-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .comp-info-value { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: var(--black); }
+
+  /* Prizes */
+  .prize-row { display: flex; gap: 10px; margin-bottom: 26px; }
+  .prize-item { flex: 1; border-radius: 10px; padding: 13px 14px; display: flex; align-items: center; gap: 10px; }
+  .prize-item.g { background: #FFFBEB; border: 1px solid #FCD34D; }
+  .prize-item.s { background: #F9FAFB; border: 1px solid #D1D5DB; }
+  .prize-item.b { background: #FDF5EF; border: 1px solid #E8C4A0; }
+  .prize-pos { font-family: 'Bebas Neue', sans-serif; font-size: 22px; line-height: 1; }
+  .prize-item.g .prize-pos { color: var(--gold); }
+  .prize-item.s .prize-pos { color: #9CA3AF; }
+  .prize-item.b .prize-pos { color: #B45309; }
+  .prize-amt { font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 0.5px; line-height: 1; }
+  .prize-item.g .prize-amt { color: var(--gold); }
+  .prize-item.s .prize-amt { color: #6B7280; }
+  .prize-item.b .prize-amt { color: #B45309; }
+  .prize-lbl { font-size: 9px; color: var(--muted); letter-spacing: 0.3px; }
+
+  /* Season prize banner */
+  .season-prize-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--black);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    gap: 16px;
+  }
+  .spb-left {}
+  .spb-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); margin-bottom: 4px;
+  }
+  .spb-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px; letter-spacing: 1px; line-height: 1;
+    color: var(--red);
+  }
+  .spb-right {
+    font-size: 11px; color: rgba(255,255,255,0.35);
+    line-height: 1.5; text-align: right;
+  }
+
+  /* Leaderboard */
+  .lb-heading { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2.5px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; }
+  .lb-table { width: 100%; border-collapse: collapse; }
+  .lb-table th { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted2); padding: 0 10px 10px; text-align: left; }
+  .lb-table th.r { text-align: right; }
+  .lb-row { transition: background 0.12s; animation: fadeUp 0.35s ease both; }
+  .lb-row:hover { background: var(--bg); }
+  .lb-row td { padding: 9px 10px; font-size: 13px; border-bottom: 1px solid var(--border-soft); }
+  .rk { font-family: 'DM Mono', monospace; font-size: 11px; width: 28px; color: var(--muted); }
+  .lb-row.r1 .rk { color: var(--gold); }
+  .lb-row.r2 .rk { color: #9CA3AF; }
+  .lb-row.r3 .rk { color: #B45309; }
+  .tc { display: flex; align-items: center; gap: 8px; }
+  .av { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .tn { font-weight: 500; font-size: 13px; color: var(--black); }
+  .badge-pill { font-size: 9px; font-weight: 700; letter-spacing: 0.3px; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; white-space: nowrap; }
+  .bp-rookie { background: #F0FDF4; color: var(--green-bright); border: 1px solid #BBF7D0; }
+  .bp-streak { background: #FFFBEB; color: var(--gold); border: 1px solid #FCD34D; }
+  .pnl { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; text-align: right; }
+  .pnl.pos { color: var(--green-bright); }
+  .pnl.neg { color: var(--loss); }
+  .roi { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; }
+  .roi.neg { color: var(--loss); opacity: 0.75; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+  .lb-row:nth-child(1){animation-delay:0.04s} .lb-row:nth-child(2){animation-delay:0.08s}
+  .lb-row:nth-child(3){animation-delay:0.12s} .lb-row:nth-child(4){animation-delay:0.16s}
+  .lb-row:nth-child(5){animation-delay:0.20s} .lb-row:nth-child(6){animation-delay:0.24s}
+  .lb-row:nth-child(7){animation-delay:0.28s} .lb-row:nth-child(8){animation-delay:0.32s}
+
+  /* RIGHT COLUMN */
+  .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+  /* CTA CARD */
+  .cta-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .cta-top {
+    background: var(--black);
+    border-left: 4px solid var(--red);
+    padding: 22px 22px 22px 20px;
+  }
+  .cta-overline { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 7px; }
+  .cta-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 1.5px; line-height: 1.0; color: #FFFFFF; margin-bottom: 7px; }
+  .cta-sub { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  .cta-body { padding: 18px 22px; }
+  .cta-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .cta-detail { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 13px; }
+  .cta-dlabel { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .cta-dvalue { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; color: var(--black); }
+  .btn-cta {
+    display: block; width: 100%;
+    background: var(--red); color: #fff; border: none;
+    padding: 13px; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .btn-cta:hover { opacity: 0.84; }
+  .brought-by {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px; border-top: 1px solid var(--border); margin-top: 14px;
+  }
+  .brought-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  /* PANEL */
+  .panel { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .panel-hdr { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2.5px; color: var(--black); }
+  .panel-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .panel-badge { font-size: 10px; font-weight: 600; color: var(--muted); }
+  .panel-body { padding: 16px 20px; }
+
+  /* Season progress */
+  .prog-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted2); margin-bottom: 9px; }
+  .prog-dots { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 18px; }
+  .pdot { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 800; }
+  .pdot.done { background: rgba(206,17,65,0.12); color: var(--red); border: 1px solid rgba(206,17,65,0.2); }
+  .pdot.now { background: var(--red); color: #fff; box-shadow: 0 0 6px rgba(206,17,65,0.35); }
+  .pdot.next { background: var(--bg); border: 1px solid var(--border); color: var(--muted2); }
+
+  /* Season rows */
+  .s-row { display: flex; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--border-soft); }
+  .s-row:last-of-type { border-bottom: none; }
+  .s-rk { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 17px; text-align: center; flex-shrink: 0; }
+  .s-av { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .s-info { flex: 1; min-width: 0; }
+  .s-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--black); }
+  .s-sub { font-size: 10px; color: var(--muted); }
+  .s-right { text-align: right; flex-shrink: 0; }
+  .s-pnl { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--green-bright); }
+  .s-bonus { font-size: 9px; font-weight: 700; color: var(--gold); }
+
+  /* Consistency bonus */
+  .bonus-box { background: #FFFDF4; border: 1px solid #FCD34D; border-radius: 10px; padding: 13px; margin-top: 14px; }
+  .bonus-box-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 9px; }
+  .bonus-line { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); padding: 3px 0; }
+  .bonus-line span:last-child { color: var(--gold); font-weight: 600; font-family: 'DM Mono', monospace; }
+  .bonus-line.total { margin-top: 8px; padding-top: 8px; border-top: 1px solid #FCD34D; }
+  .bonus-line.total span { color: var(--black); font-weight: 700; font-size: 12px; }
+
+  /* Badges */
+  .badge-items { display: flex; flex-direction: column; gap: 9px; }
+  .badge-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; }
+  .b-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .b-name { font-size: 12px; font-weight: 600; color: var(--black); margin-bottom: 2px; }
+  .b-desc { font-size: 10px; color: var(--muted); }
+  .b-count { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--muted2); margin-left: auto; flex-shrink: 0; }
+
+  html, body { max-width: 100%; overflow-x: hidden; }
+
+  @media (max-width: 1000px) {
+    nav { padding: 0 16px; height: 56px; }
+    .live-pill { display: none; }
+    .btn-nav { font-size: 12px; padding: 8px 14px; }
+    .hero { padding: 32px 16px 0; }
+    .hero-inner { flex-direction: column; gap: 24px; margin-bottom: 28px; }
+    .hero-cta { width: 100%; }
+    .hero-stats { margin: 0 -16px; }
+    .hero-stat { padding: 14px 16px; }
+    .hero-stat-value { font-size: 22px; }
+    .hero-title { font-size: 48px; }
+    .main { grid-template-columns: 1fr; padding: 16px 16px 60px; }
+    .game-card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .game-meta { text-align: left; }
+    .game-body { padding: 16px; }
+    .score-banner { padding: 14px 16px; }
+    .score-number { font-size: 42px; }
+    .prize-row { flex-direction: column; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-title { font-size: 38px; }
+    .score-number { font-size: 36px; }
+    .lb-table th, .lb-row td { padding: 8px 5px; font-size: 11px; }
+    .tn { font-size: 11px; }
+    .pnl { font-size: 11px; }
+    .roi { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">&#127936; BULLS VS CELTICS &mdash; GAME 9 OF 15 &mdash; LIVE NOW</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">WIN TONIGHT. CLIMB ALL SEASON.</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">SEASON PRIZE POOL: $50,000</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">2,247 TRADERS COMPETING TONIGHT</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">&#127936; BULLS VS CELTICS &mdash; GAME 9 OF 15 &mdash; LIVE NOW</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">WIN TONIGHT. CLIMB ALL SEASON.</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">SEASON PRIZE POOL: $50,000</span>
+    <span class="ticker-sep">&#9670;</span>
+    <span class="ticker-item">2,247 TRADERS COMPETING TONIGHT</span>
+    <span class="ticker-sep">&#9670;</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="catalyst-wordmark">CATALYST</div>
+    <div class="nav-sep"></div>
+    <div class="partner-block">
+      <div class="partner-label">Official Partner</div>
+      <svg width="88" height="20" viewBox="0 0 90 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="90" height="20" rx="3" fill="#1B2A8C"/>
+        <rect x="44" y="1.5" width="2.5" height="8" fill="white"/>
+        <rect x="40.5" y="4" width="9" height="2.5" fill="white"/>
+        <text x="6" y="15" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="11" fill="white">Plus500</text>
+      </svg>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="live-pill">
+      <div class="live-dot"></div>
+      Live Competition
+    </div>
+    <button class="btn-nav">Enter Tonight's Game</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="series-pill">&#127942; 2025&ndash;26 Chicago Bulls Season Series</div>
+      <h1 class="hero-title">
+        <span class="red">PLUS500</span><br>GAME NIGHT<br>TRADING SERIES
+      </h1>
+      <p class="hero-sub">Every Chicago Bulls game is your chance to be a winner. Top traders win cash prizes each game, with every P&L adding up toward the season championship $25,000 prize.</p>
+    </div>
+    <div class="hero-cta">
+      <div class="hero-cta-top">
+        <div class="hero-cta-overline">Tonight's Competition</div>
+        <div class="hero-cta-title">WIN TONIGHT.<br>CLIMB ALL SEASON.</div>
+        <div class="hero-cta-sub">Win cash prizes each game. Every P&L counts toward the season championship.</div>
+      </div>
+      <div class="hero-cta-body">
+        <button class="btn-hero-enter">Enter This Game &mdash; Free</button>
+        <div class="hero-brought-by">
+          <span class="hero-brought-text">Brought to you by</span>
+          <svg width="72" height="16" viewBox="0 0 90 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="90" height="20" rx="3" fill="#1B2A8C"/>
+            <rect x="44" y="1.5" width="2.5" height="8" fill="white"/>
+            <rect x="40.5" y="4" width="9" height="2.5" fill="white"/>
+            <text x="6" y="15" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="11" fill="white">Plus500</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value accent">$50K</div>
+      <div class="hero-stat-label">Season Prize Pool</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">$10K</div>
+      <div class="hero-stat-label">Account Size Per Game</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">2,247</div>
+      <div class="hero-stat-label">Trading Tonight</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT -->
+  <div>
+    <div class="game-card">
+
+      <div class="game-card-header">
+        <div class="matchup">
+          <div class="team-name">BULLS</div>
+          <div class="vs-tag">VS</div>
+          <div class="team-name">CELTICS</div>
+        </div>
+        <div class="game-meta">
+          <strong>United Center, Chicago</strong>
+          February 26, 2026 &nbsp;&middot;&nbsp; Game 9 of 15
+        </div>
+      </div>
+
+      <div class="game-body">
+
+        <div class="score-banner">
+          <div class="score-team">
+            <div class="score-team-name">Chicago Bulls</div>
+            <div class="score-number bulls">87</div>
+          </div>
+          <div class="score-center">
+            <div class="q-badge">&#9679; Q3 Live</div>
+            <div class="game-clock">4:22</div>
+          </div>
+          <div class="score-team">
+            <div class="score-team-name">Boston Celtics</div>
+            <div class="score-number" style="color:#1D6140;">79</div>
+          </div>
+        </div>
+
+        <div class="comp-info-row">
+          <div class="comp-info-item">
+            <div class="comp-info-label">Account Size</div>
+            <div class="comp-info-value">$10,000</div>
+          </div>
+          <div class="comp-info-item">
+            <div class="comp-info-label">Max Drawdown</div>
+            <div class="comp-info-value">$2,500</div>
+          </div>
+        </div>
+
+        <div class="prize-row">
+          <div class="prize-item g">
+            <div class="prize-pos">1st</div>
+            <div><div class="prize-amt">$500</div><div class="prize-lbl">3.3&times; account</div></div>
+          </div>
+          <div class="prize-item s">
+            <div class="prize-pos">2nd</div>
+            <div><div class="prize-amt">$200</div><div class="prize-lbl">1.3&times; account</div></div>
+          </div>
+          <div class="prize-item b">
+            <div class="prize-pos">3rd</div>
+            <div><div class="prize-amt">$100</div><div class="prize-lbl">0.7&times; account</div></div>
+          </div>
+        </div>
+
+        <div class="lb-heading">Live Leaderboard &mdash; Game #9</div>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Trader</th>
+              <th></th>
+              <th class="r">P&amp;L</th>
+              <th class="r">ROI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="lb-row r1">
+              <td class="rk">01</td>
+              <td><div class="tc"><div class="av" style="background:#FFFBEB;color:var(--gold);">BK</div><span class="tn">bullkong</span></div></td>
+              <td><span class="badge-pill bp-streak">&#128293; 5-Streak</span></td>
+              <td class="pnl pos">+$2,340</td>
+              <td class="roi">+23.4%</td>
+            </tr>
+            <tr class="lb-row r2">
+              <td class="rk">02</td>
+              <td><div class="tc"><div class="av" style="background:#F3F4F6;color:#6B7280;">ML</div><span class="tn">market_lady</span></div></td>
+              <td></td>
+              <td class="pnl pos">+$1,890</td>
+              <td class="roi">+18.9%</td>
+            </tr>
+            <tr class="lb-row r3">
+              <td class="rk">03</td>
+              <td><div class="tc"><div class="av" style="background:#FDF5EF;color:#B45309;">ZR</div><span class="tn">zero_risk</span></div></td>
+              <td><span class="badge-pill bp-rookie">&#9733; Rookie</span></td>
+              <td class="pnl pos">+$1,620</td>
+              <td class="roi">+16.2%</td>
+            </tr>
+            <tr class="lb-row">
+              <td class="rk">04</td>
+              <td><div class="tc"><div class="av" style="background:#F3F4F6;color:#9CA3AF;">PT</div><span class="tn">predictoor</span></div></td>
+              <td></td>
+              <td class="pnl pos">+$980</td>
+              <td class="roi">+9.8%</td>
+            </tr>
+            <tr class="lb-row">
+              <td class="rk">05</td>
+              <td><div class="tc"><div class="av" style="background:#F3F4F6;color:#9CA3AF;">SK</div><span class="tn">skunkworks</span></div></td>
+              <td></td>
+              <td class="pnl pos">+$670</td>
+              <td class="roi">+6.7%</td>
+            </tr>
+            <tr class="lb-row">
+              <td class="rk">06</td>
+              <td><div class="tc"><div class="av" style="background:#F3F4F6;color:#9CA3AF;">WD</div><span class="tn">winnersdontquit</span></div></td>
+              <td></td>
+              <td class="pnl pos">+$340</td>
+              <td class="roi">+3.4%</td>
+            </tr>
+            <tr class="lb-row">
+              <td class="rk">07</td>
+              <td><div class="tc"><div class="av" style="background:#F3F4F6;color:#9CA3AF;">JX</div><span class="tn">jaxon_trades</span></div></td>
+              <td></td>
+              <td class="pnl neg">-$210</td>
+              <td class="roi neg">-2.1%</td>
+            </tr>
+            <tr class="lb-row">
+              <td class="rk">08</td>
+              <td><div class="tc"><div class="av" style="background:#F3F4F6;color:#9CA3AF;">NV</div><span class="tn">nova_flip</span></div></td>
+              <td></td>
+              <td class="pnl neg">-$580</td>
+              <td class="roi neg">-5.8%</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- Season Standings -->
+    <div class="panel">
+      <div class="panel-hdr" style="background:var(--black); flex-direction:column; align-items:flex-start; gap:2px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);">&#127942; Season Championship Prize</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;color:var(--red);line-height:1;">$25,000</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;">Top cumulative P&amp;L across all 15 games</div>
+      </div>
+      <div class="panel-hdr" style="border-top:1px solid var(--border);">
+        <div>
+          <div class="panel-title">Season Standings</div>
+          <div class="panel-sub">Cumulative P&amp;L across all games</div>
+        </div>
+        <div class="panel-badge">Game 9 of 15</div>
+      </div>
+      <div class="panel-body">
+
+        <div class="s-row">
+          <div class="s-rk" style="color:var(--gold);">1</div>
+          <div class="s-av" style="background:#FFFBEB;color:var(--gold);">BK</div>
+          <div class="s-info">
+            <div class="s-name">bullkong</div>
+            <div class="s-sub">8 of 9 games profitable</div>
+          </div>
+          <div class="s-right">
+            <div class="s-pnl">+$14,200</div>
+            <div class="s-bonus">+10% BONUS &#9733;</div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-rk" style="color:#9CA3AF;">2</div>
+          <div class="s-av" style="background:#F3F4F6;color:#9CA3AF;">ML</div>
+          <div class="s-info">
+            <div class="s-name">market_lady</div>
+            <div class="s-sub">6 of 9 games profitable</div>
+          </div>
+          <div class="s-right">
+            <div class="s-pnl">+$11,550</div>
+            <div class="s-bonus">+5% BONUS</div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-rk" style="color:#B45309;">3</div>
+          <div class="s-av" style="background:#FDF5EF;color:#B45309;">PT</div>
+          <div class="s-info">
+            <div class="s-name">predictoor</div>
+            <div class="s-sub">5 of 9 games profitable</div>
+          </div>
+          <div class="s-right">
+            <div class="s-pnl">+$8,900</div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-rk">4</div>
+          <div class="s-av" style="background:#F3F4F6;color:#9CA3AF;">SK</div>
+          <div class="s-info">
+            <div class="s-name">skunkworks</div>
+            <div class="s-sub">5 of 8 games played</div>
+          </div>
+          <div class="s-right">
+            <div class="s-pnl">+$6,340</div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-rk">5</div>
+          <div class="s-av" style="background:#F3F4F6;color:#9CA3AF;">ZR</div>
+          <div class="s-info">
+            <div class="s-name">zero_risk</div>
+            <div class="s-sub">Joined Game 7 &middot; 3 games</div>
+          </div>
+          <div class="s-right">
+            <div class="s-pnl">+$5,100</div>
+            <div class="s-bonus" style="color:var(--green-bright);">&#9733; Rookie</div>
+          </div>
+        </div>
+
+        <div class="bonus-box">
+          <div class="bonus-box-title">&#9889; Consistency Bonus</div>
+          <div class="bonus-line">
+            <span>Profitable in 60%+ of games</span>
+            <span>+5%</span>
+          </div>
+          <div class="bonus-line">
+            <span>Profitable in 75%+ of games</span>
+            <span>+10%</span>
+          </div>
+          <div class="bonus-line total">
+            <span>Season Championship Prize</span>
+            <span>$25,000</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <div>
+          <div class="panel-title">Live Achievements</div>
+          <div class="panel-sub">Earned this season</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="badge-items">
+          <div class="badge-row">
+            <div class="b-icon" style="background:#F0FDF4;">&#127775;</div>
+            <div>
+              <div class="b-name">Rookie of the Night</div>
+              <div class="b-desc">First-timers finishing top 25%</div>
+            </div>
+            <div class="b-count">12</div>
+          </div>
+          <div class="badge-row">
+            <div class="b-icon" style="background:#FFFBEB;">&#128293;</div>
+            <div>
+              <div class="b-name">Streak Tracker</div>
+              <div class="b-desc">3+ consecutive profitable games</div>
+            </div>
+            <div class="b-count">4</div>
+          </div>
+          <div class="badge-row">
+            <div class="b-icon" style="background:#FEF2F4;">&#128274;</div>
+            <div>
+              <div class="b-name">Top 10 Locked</div>
+              <div class="b-desc">Held top 10 season rank for 5+ games</div>
+            </div>
+            <div class="b-count">7</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
